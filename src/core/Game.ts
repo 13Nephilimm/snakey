@@ -18,13 +18,16 @@ export default class Game {
   constructor(app: Application) {
     this.app = app;
 
+    const width = this.app.screen.width;
+    const height = this.app.screen.height;
+
     this.snake = {
-      head: createRandomCoordinate(gridCellSize, 200, 200),
+      head: createRandomCoordinate(gridCellSize, width, height),
       body: [],
       direction: Direction.Up,
     };
 
-    this.food = createRandomCoordinate(gridCellSize, 200, 200);
+    this.food = createRandomCoordinate(gridCellSize, width, height);
 
     this.snakeHead = new Graphics()
       .rect(0, 0, gridCellSize, gridCellSize)
@@ -60,18 +63,41 @@ export default class Game {
   }
 
   private update() {
+    // Wall collision
+    const maxX = this.app.screen.width - gridCellSize;
+    const maxY = this.app.screen.height - gridCellSize;
+
+    if (
+      this.snake.head.x < 0 ||
+      this.snake.head.x > maxX ||
+      this.snake.head.y < 0 ||
+      this.snake.head.y > maxY
+    ) {
+      this.snake.body = [];
+      this.snake.head = createRandomCoordinate(
+        gridCellSize,
+        this.app.screen.width,
+        this.app.screen.height
+      );
+    }
+
     // Food collision
     if (
       this.snake.head.x === this.food.x &&
       this.snake.head.y === this.food.y
     ) {
       this.snake.body.push({ ...this.snake.head });
-      this.food = createRandomCoordinate(gridCellSize, 200, 200);
+      this.food = createRandomCoordinate(
+        gridCellSize,
+        this.app.screen.width,
+        this.app.screen.height
+      );
     }
 
     this.snake.body.unshift({ ...this.snake.head });
     this.snake.body.pop();
 
+    // Check direction
     switch (this.snake.direction) {
       case Direction.Up:
         this.snake.head.y -= gridCellSize;
@@ -94,7 +120,11 @@ export default class Game {
       )
     ) {
       this.snake.body = [];
-      this.snake.head = createRandomCoordinate(gridCellSize, 200, 200);
+      this.snake.head = createRandomCoordinate(
+        gridCellSize,
+        this.app.screen.width,
+        this.app.screen.height
+      );
     }
 
     // Rendering

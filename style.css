@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Joti One", serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #4d667b;
+}
+
+h1 {
+  font-size: 64px;
+  padding: 8px;
+  color: #d0d23a;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #4d667b;
+}
+
+#pixi-container {
+  border-radius: 30px;
+  border: 3px solid #000;
+  height: 600px;
+  overflow: hidden;
+}
