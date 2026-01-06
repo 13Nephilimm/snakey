@@ -47,12 +47,30 @@ export default class Game {
     this.start();
   }
 
+  private isOpposite(a: Direction, b: Direction): boolean {
+    return (
+      (a === Direction.Up && b === Direction.Down) ||
+      (a === Direction.Down && b === Direction.Up) ||
+      (a === Direction.Left && b === Direction.Right) ||
+      (a === Direction.Right && b === Direction.Left)
+    );
+  }
+
   private bindControls() {
-    window.addEventListener("keydown", (keypress) => {
-      if (keypress.key === "w") this.snake.direction = Direction.Up;
-      if (keypress.key === "a") this.snake.direction = Direction.Left;
-      if (keypress.key === "s") this.snake.direction = Direction.Down;
-      if (keypress.key === "d") this.snake.direction = Direction.Right;
+    window.addEventListener("keydown", (e) => {
+      let newDirection: Direction | null = null;
+
+      if (e.key === "w") newDirection = Direction.Up;
+      if (e.key === "s") newDirection = Direction.Down;
+      if (e.key === "a") newDirection = Direction.Left;
+      if (e.key === "d") newDirection = Direction.Right;
+
+      if (
+        newDirection !== null &&
+        !this.isOpposite(this.snake.direction, newDirection)
+      ) {
+        this.snake.direction = newDirection;
+      }
     });
   }
 
