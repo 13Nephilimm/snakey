@@ -1,10 +1,18 @@
-import { Application, Container, Graphics } from "pixi.js";
+import {
+  Application,
+  Container,
+  Graphics,
+  Sprite,
+  Texture,
+  Assets,
+} from "pixi.js";
 import Coordinate from "../types/Coordinate";
 import Direction from "../types/Direction";
 import { createRandomCoordinate } from "../utils/Grid";
 import Snake from "../types/Snake";
+import foodImage from "../assets/5.png";
 
-const gridCellSize = 20;
+const gridCellSize = 50;
 
 export default class Game {
   private app: Application;
@@ -12,11 +20,18 @@ export default class Game {
   private food: Coordinate;
 
   private snakeHead: Graphics;
-  private foodGraphic: Graphics;
+  private foodGraphic: Sprite;
   private bodyGraphic: Container;
+
+  private scoreElement: HTMLParagraphElement;
+  private score: number = 0;
 
   constructor(app: Application) {
     this.app = app;
+
+    this.scoreElement = document.getElementById(
+      "score"
+    ) as HTMLParagraphElement;
 
     const width = this.app.screen.width;
     const height = this.app.screen.height;
@@ -33,9 +48,10 @@ export default class Game {
       .rect(0, 0, gridCellSize, gridCellSize)
       .fill("white");
 
-    this.foodGraphic = new Graphics()
-      .rect(0, 0, gridCellSize, gridCellSize)
-      .fill("red");
+    // Initialize foodGraphic as a placeholder first
+    this.foodGraphic = new Sprite(Texture.EMPTY);
+    this.foodGraphic.width = gridCellSize;
+    this.foodGraphic.height = gridCellSize;
 
     this.bodyGraphic = new Container();
 
@@ -44,7 +60,35 @@ export default class Game {
     this.app.stage.addChild(this.bodyGraphic);
 
     this.bindControls();
-    this.start();
+    this.loadTextureAndStart();
+  }
+
+  private async loadTextureAndStart() {
+    try {
+      // Load the texture using Assets.load
+      const texture = await Assets.load(foodImage);
+
+      // Apply the loaded texture
+      this.foodGraphic.texture = texture;
+
+      // Start the game
+      this.start();
+    } catch (error) {
+      console.error("Failed to load texture:", error);
+
+      // Fallback to a colored rectangle
+      const fallback = new Graphics()
+        .rect(0, 0, gridCellSize, gridCellSize)
+        .fill({ color: 0xff0000, alpha: 1 });
+
+      // Replace the sprite with the graphic
+      this.app.stage.removeChild(this.foodGraphic);
+      this.foodGraphic = fallback as any;
+      this.app.stage.addChild(this.foodGraphic as any);
+
+      // Start the game anyway
+      this.start();
+    }
   }
 
   private isOpposite(a: Direction, b: Direction): boolean {
@@ -76,7 +120,6 @@ export default class Game {
 
   private start() {
     this.app.ticker.maxFPS = 10;
-
     this.app.ticker.add(() => this.update());
   }
 
@@ -92,6 +135,12 @@ export default class Game {
       this.snake.head.y > maxY
     ) {
       this.snake.body = [];
+
+      // Update score
+      this.score = 0;
+      this.scoreElement.textContent = `Score: ${this.score}`;
+
+      // Spawn new snake
       this.snake.head = createRandomCoordinate(
         gridCellSize,
         this.app.screen.width,
@@ -105,6 +154,12 @@ export default class Game {
       this.snake.head.y === this.food.y
     ) {
       this.snake.body.push({ ...this.snake.head });
+
+      // Update score
+      this.score += 1;
+      this.scoreElement.textContent = `Score: ${this.score}`;
+
+      // Display new food
       this.food = createRandomCoordinate(
         gridCellSize,
         this.app.screen.width,
@@ -138,6 +193,12 @@ export default class Game {
       )
     ) {
       this.snake.body = [];
+
+      // Update score
+      this.score = 0;
+      this.scoreElement.textContent = `Score: ${this.score}`;
+
+      // Spawn new snake
       this.snake.head = createRandomCoordinate(
         gridCellSize,
         this.app.screen.width,

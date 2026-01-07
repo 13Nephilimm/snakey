@@ -20,6 +20,11 @@ h1 {
   color: #d0d23a;
 }
 
+p {
+  color: #d0d23a;
+  font-size: 24px;
+}
+
 #app {
   display: flex;
   flex-direction: column;
