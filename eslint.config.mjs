@@ -1,20 +1,35 @@
 import js from "@eslint/js";
-import prettier from "eslint-plugin-prettier/recommended";
-import tseslint from "typescript-eslint";
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 
-export default tseslint.config(
-  { ignores: ["*"] },
+export default [
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      prettier,
-    ],
     files: ["**/*.{ts,tsx}"],
+
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        console: "readonly",
+        HTMLParagraphElement: "readonly",
+      },
     },
-    rules: {},
-  }
-);
+
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+
+    rules: {
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+
+      "@typescript-eslint/no-explicit-any": "off", // for quick prototyping
+      "no-undef": "off", // ignore undefined errors for browser globals
+    },
+  },
+];
