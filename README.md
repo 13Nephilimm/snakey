@@ -23,7 +23,7 @@ Vite
 
 Installation
 # Clone repository
-git clone https://github.com/your-username/snakey.git
+git clone
 cd snakey
 
 # Install dependencies
@@ -31,8 +31,6 @@ npm install
 
 # Run dev server
 npm run dev
-
-Open your browser at http://localhost:5173 (Vite will show the exact port).
 
 Build
 npm run build
