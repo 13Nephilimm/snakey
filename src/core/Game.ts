@@ -44,9 +44,11 @@ export default class Game {
 
     this.food = createRandomCoordinate(gridCellSize, width, height);
 
+    const radius = gridCellSize / 2;
+
     this.snakeHead = new Graphics()
-      .rect(0, 0, gridCellSize, gridCellSize)
-      .fill("white");
+      .circle(radius, radius, radius)
+      .fill("yellow");
 
     // Initialize foodGraphic as a placeholder first
     this.foodGraphic = new Sprite(Texture.EMPTY);
@@ -55,9 +57,9 @@ export default class Game {
 
     this.bodyGraphic = new Container();
 
+    this.app.stage.addChild(this.bodyGraphic);
     this.app.stage.addChild(this.foodGraphic);
     this.app.stage.addChild(this.snakeHead);
-    this.app.stage.addChild(this.bodyGraphic);
 
     this.bindControls();
     this.loadTextureAndStart();
@@ -119,7 +121,7 @@ export default class Game {
   }
 
   private start() {
-    this.app.ticker.maxFPS = 10;
+    this.app.ticker.maxFPS = 2;
     this.app.ticker.add(() => this.update());
   }
 
@@ -212,9 +214,12 @@ export default class Game {
 
     this.bodyGraphic.removeChildren();
     for (const body of this.snake.body) {
-      const part = new Graphics()
-        .rect(body.x, body.y, gridCellSize, gridCellSize)
-        .fill("grey");
+      const radius = gridCellSize / 2.9;
+
+      const part = new Graphics().circle(0, 0, radius).fill("white");
+
+      part.position.set(body.x + gridCellSize / 2, body.y + gridCellSize / 2);
+
       this.bodyGraphic.addChild(part);
     }
   }
